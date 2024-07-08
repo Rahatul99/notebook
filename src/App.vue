@@ -2,7 +2,28 @@
 import { ref } from "vue";
 const showModal = ref(false);
 const newNote = ref("");
-console.log(newNote);
+const notes = ref([]);
+const errorMessage = ref(" ")
+
+const getRandomColor = () => {
+  return "hsl(" + Math.random() * 360 + ", 100%, 75%)";
+};
+
+const addNote = () => {
+  if (newNote.value.length < 10) {
+  return errorMessage.value = "You should have at least 10 characters";
+  }
+
+  notes.value.push({
+    id: Math.floor(Math.random() * 100000),
+    text: newNote.value,
+    color: getRandomColor(),
+    date: new Date(),
+  });
+  showModal.value = false;
+  newNote.value = "";
+  errorMessage.value = ""
+};
 </script>
 
 <template>
@@ -11,27 +32,27 @@ console.log(newNote);
       <div class="modal">
         <header class="modal-header">
           <h2>Add Note</h2>
-          <p @click="showModal = false" class="close-btn">x</p>
+          <span @click="showModal = false" class="close-btn">x</span>
         </header>
         <textarea
-          v-model="newNote"
+          v-model.trim="newNote"
           placeholder="Write your note here..."
         ></textarea>
-        <button>Add Note</button>
+        <p v-if="errorMessage">{{ errorMessage }}</p>
+        <button @click="addNote">Add Note</button>
       </div>
     </div>
     <div class="container">
       <header>
-        <h1>Notes {{ showModal }}</h1>
+        <h1>Notes</h1>
         <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div class="card">
-          <p class="main-text">Notes</p>
+        <div v-for="note in notes" :key="note.id" class="card" :style="{backgroundColor: note.color}">
+          <p class="main-text">{{ note.text }}</p>
           <p class="date">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
-            Necessitatibus minima quaerat deserunt architecto debitis,
-            laboriosam aut est facilis. Corrupti, perferendis./p>
+            <p> {{ note.date.toLocaleDateString("en-US") }}</p>
+            <p>{{ note.date.toLocaleTimeString("en-US") }}</p>
           </p>
         </div>
       </div>
@@ -74,6 +95,8 @@ h1 {
 .date {
   font-size: 12.5px;
   margin-top: auto;
+  display: flex;
+  justify-content: space-between;
 }
 
 header {
@@ -121,11 +144,6 @@ header button {
   }
 }
 
-main {
-  height: 100vh;
-  overflow: hidden;
-}
-
 .modal {
   width: 750px;
   background-color: white;
@@ -136,6 +154,10 @@ main {
   flex-direction: column;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-out;
+}
+
+.modal  p{
+  color: red;
 }
 
 @keyframes slideIn {
