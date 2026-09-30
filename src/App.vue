@@ -31,7 +31,7 @@ const addNote = () => {
     <div v-show="showModal" class="overlay">
       <div class="modal">
         <header class="modal-header">
-          <h2>Add Note</h2>
+          <h2>Add Note and save</h2>
           <span @click="showModal = false" class="close-btn">x</span>
         </header>
         <textarea
